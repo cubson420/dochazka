@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="cs"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16110e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Docházka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:oklch(0.16 0.012 65);--panel:oklch(0.185 0.012 65);--fg:oklch(0.96 0.008 85);--card:oklch(0.225 0.014 65);--card2:oklch(0.28 0.014 65);--primary:oklch(0.76 0.14 68);--primary-fg:oklch(0.2 0.02 65);--muted:oklch(0.68 0.02 75);--border:oklch(0.34 0.015 65);--free:oklch(0.72 0.15 155);--seated:oklch(0.68 0.13 240);--attn:oklch(0.63 0.21 25);--pt:oklch(0.76 0.14 68 / 0.16);color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:500 16px 'Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased;display:flex;justify-content:center}
+#app{width:100%;max-width:480px;height:100%;position:relative;overflow:hidden}
+#view{height:100%;overflow-y:auto;padding:calc(18px + env(safe-area-inset-top,0px)) 18px 130px}
+h1,h2{margin:0;font-weight:800;letter-spacing:-.02em}
+button,select,input,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+.mu{color:var(--muted)}
+.pill{appearance:none;-webkit-appearance:none;background:var(--card);border:1px solid var(--border);border-radius:99px;padding:9px 16px;font-weight:700;font-size:15px}
+.hero{border-radius:24px;padding:18px;margin:16px 0;background:var(--card);border:1px solid var(--border);text-align:center}
+.hero.on{background:var(--pt);border-color:oklch(0.76 0.14 68 / 0.5)}
+.ring{position:relative;width:236px;height:236px;margin:10px auto}
+.ring svg{position:absolute;inset:0;width:100%;height:100%}
+.rt{fill:none;stroke:var(--card2);stroke-width:12}.on .rt{stroke:oklch(0.76 0.14 68 / 0.22)}
+.rp{fill:none;stroke:var(--primary);stroke-width:12;stroke-linecap:round}
+.ring .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.big{font-size:36px;font-weight:800;letter-spacing:-.02em}.tm{font-size:26px;font-weight:800;margin-top:6px;color:var(--primary);font-variant-numeric:tabular-nums}
+.stats{display:flex;border-top:1px solid var(--border);padding-top:14px;margin-top:6px}
+.stats>div{flex:1;font-weight:800;font-size:19px}.stats small{display:block;font-weight:600;font-size:12px;color:var(--muted);margin-top:2px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:16px;padding:17px;font-weight:800;font-size:16px;background:var(--primary);color:var(--primary-fg)}
+.btn.o{background:var(--card2);color:var(--fg);border:1px solid var(--border)}
+.btn.sm{padding:13px;font-size:15px}
+.btn.danger{background:var(--attn);color:#fff}
+.row2{display:flex;gap:10px}
+.lab{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:24px 4px 8px}
+.item{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;width:100%;text-align:left}
+.item.hl{border-color:var(--primary);box-shadow:0 0 0 2px var(--pt) inset}
+.item.warn{border-color:oklch(0.63 0.21 25 / 0.55);background:oklch(0.63 0.21 25 / 0.14);font-weight:700}
+.item.note{background:var(--pt);border-color:oklch(0.76 0.14 68 / 0.4);font-weight:700;font-size:14px}
+.bar{width:4px;align-self:stretch;border-radius:3px;flex:none}
+.grow{flex:1;min-width:0}.r{text-align:right}.b{font-weight:800}
+.tag{font-size:10.5px;font-weight:800;background:var(--pt);color:var(--primary);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+nav{position:absolute;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--panel);border:1px solid var(--border);border-radius:99px;display:flex;padding:5px;box-shadow:0 12px 30px -8px #000a}
+nav button{flex:1;padding:13px 0;border-radius:99px;font-weight:800;font-size:14px;color:var(--muted)}
+nav .a{background:var(--primary);color:var(--primary-fg)}
+.sum{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin:14px 0}
+.sum .t{display:flex;text-align:center}.sum .t>div{flex:1;font-size:21px;font-weight:800}.sum .t>div:last-child{color:var(--primary)}
+.sum small{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:2px}
+.sum .ft{text-align:center;margin-top:14px;border-top:1px solid var(--border);padding-top:12px;font-size:14px;color:var(--muted)}
+.wbars{display:flex;gap:7px;margin-top:16px;border-top:1px solid var(--border);padding-top:16px}
+.wbars div{flex:1;text-align:center;font-size:13px;color:var(--muted);font-weight:600}
+.wbars i{display:block;height:52px;background:var(--card2);border-radius:9px;margin-bottom:6px;position:relative;overflow:hidden}
+.wbars i b{position:absolute;bottom:0;left:0;right:0;background:var(--primary)}
+.wbars .today{color:var(--primary);font-weight:800}
+.dh{display:flex;justify-content:space-between;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:12px;margin:18px 4px 8px}
+.dh.t{color:var(--primary)}
+.fab{position:absolute;bottom:calc(100px + env(safe-area-inset-bottom,0px));left:50%;margin-left:-30px;width:60px;height:60px;border-radius:50%;background:var(--primary);color:var(--primary-fg);font-size:32px;font-weight:700;box-shadow:0 10px 24px -6px #000c}
+.top{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.top h2{font-size:23px;flex:1;text-align:center}.top button{color:var(--primary);font-size:26px;padding:6px 12px}
+.mh{display:flex;align-items:center;justify-content:space-between;margin:6px 0 4px}.mh h1{font-size:25px;white-space:nowrap}
+.mh .nv{display:flex;gap:6px;align-items:center}.mh .nv button{background:var(--card2);color:var(--fg);border-radius:99px;min-width:38px;height:38px;font-weight:800;padding:0 14px;font-size:15px}
+.cal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:12px}
+.cwd,.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cwd div{text-align:center;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding-bottom:6px}
+.cd{aspect-ratio:1/1.08;border-radius:12px;background:var(--card2);border:1.5px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:6px 2px 5px;font-weight:700;font-size:14px}
+.cd.o{background:none;pointer-events:none}
+.cd.today{border-color:var(--primary)}
+.cd.sel{background:var(--primary);color:var(--primary-fg)}
+.cd em{display:flex;gap:3px;height:7px;align-items:center;font-style:normal}
+.cd b{width:7px;height:7px;border-radius:50%;display:block}.cd.sel b{box-shadow:0 0 0 1.5px var(--primary-fg)}
+.cd u{text-decoration:none;font-size:9px;font-weight:800;line-height:1}
+#ov{position:absolute;inset:0;background:#000a;display:none;align-items:flex-end;z-index:5}
+#sh{background:var(--bg);border-top:1px solid var(--border);width:100%;max-height:92%;overflow-y:auto;border-radius:30px 30px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px))}
+.sh-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.sh-h h2{font-size:25px}.sh-h button{color:var(--primary);font-weight:700}
+.f{display:flex;justify-content:space-between;align-items:center;margin:14px 0;font-weight:700}
+.fl{color:var(--muted);font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;margin:18px 2px 8px}
+input[type=text],input[type=number],input[type=password],textarea{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px;outline:0}
+input:focus,textarea:focus{border-color:var(--primary)}
+input[type=date],input[type=time]{background:var(--card2);border:1px solid var(--border);border-radius:99px;padding:9px 14px}
+input.num{width:96px;border-radius:99px;padding:10px 14px;text-align:right}
+input[type=checkbox]{width:24px;height:24px;accent-color:var(--primary)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--border);background:var(--card2);color:var(--muted);border-radius:99px;padding:10px 18px;font-weight:700;font-size:14px}
+.chip.s{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+.sw{width:44px;height:44px;border-radius:50%}
+.err{color:var(--attn);text-align:center;margin:10px 0;font-weight:700;font-size:14px}
+.set{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.set button{display:flex;width:100%;align-items:center;gap:14px;padding:13px 14px;border-bottom:1px solid var(--border);text-align:left;font-weight:700;font-size:15px}
+.set button:last-child{border:0}.ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:var(--card2);font-size:17px;flex:none}
+#toast{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:14px;right:14px;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--primary);border-radius:22px;padding:16px;text-align:center;box-shadow:0 16px 40px -8px #000d;z-index:9;display:none}
+</style></head><body><div id="app"><div id="toast"></div><div id="view"></div><nav id="nav"></nav><div id="ov"><div id="sh"></div></div></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const COL=['#e8a33d','#4cc38a','#5aa2e0','#e0668a','#9b8ce0','#e5603f'],OLD=['#ea5e04','#c99a1d','#1b9a8a','#d6577c','#3d9e66','#636f8c'];
+const MON=['led','úno','bře','dub','kvě','čvn','čvc','srp','zář','říj','lis','pro'],MONF=['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'],DAY=['Po','Út','St','Čt','Pá','So','Ne'];
+let S={jobs:[{id:1,name:'Atelier',rate:200,color:COL[0],remind:true,at:'15:00'},{id:2,name:'Butchers',rate:200,color:COL[3]}],entries:[],shifts:[],active:null,wk:1,goal:0,remind:0,job:1,updated:0};
+try{const x=localStorage.getItem('dch');if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
+function migrate(){S.shifts=S.shifts||[];S.jobs.forEach(j=>{const i=OLD.indexOf(j.color);if(i>=0)j.color=COL[i]})}
+migrate();
+let GH={owner:'',repo:'',branch:'main',path:'data.json',token:'',auto:false};
+try{Object.assign(GH,JSON.parse(localStorage.getItem('dch_gh')||'{}'))}catch(e){}
+const ghStore=()=>{try{localStorage.setItem('dch_gh',JSON.stringify(GH))}catch(e){}},ghOK=()=>!!(GH.owner&&GH.repo&&GH.token);
+let ghMsg='',syncing=false,again=false,pt;
+const persist=()=>{try{localStorage.setItem('dch',JSON.stringify(S))}catch(e){}};
+const save=()=>{S.updated=Date.now();persist();schedPush()};
+let tab='a',wkOff=0,filt=0,uid=Date.now(),monOff=0;
+const J=id=>S.jobs.find(j=>j.id==id)||S.jobs[0];
+const p2=n=>String(n).padStart(2,'0'),dur=ms=>{const m=Math.floor(ms/60000);return Math.floor(m/60)+':'+p2(m%60)};
+const kc=n=>n.toLocaleString('cs-CZ',{minimumFractionDigits:2,maximumFractionDigits:2})+' Kč';
+const dstr=t=>{const d=new Date(t);return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())},tstr=t=>{const d=new Date(t);return p2(d.getHours())+':'+p2(d.getMinutes())};
+const hm=t=>{const d=new Date(t);return d.getHours()+':'+p2(d.getMinutes())};
+const brk=e=>(e.breaks||[]).reduce((a,b)=>a+b[1]-b[0],0),work=e=>Math.max(0,e.end-e.start-brk(e)),pay=e=>work(e)/36e5*e.rate;
+const sod=t=>{const d=new Date(t);d.setHours(0,0,0,0);return d.getTime()};
+const wstart=off=>{const d=new Date();d.setHours(0,0,0,0);const k=S.wk==1?(d.getDay()+6)%7:d.getDay();d.setDate(d.getDate()-k+off*7);return d.getTime()};
+const fmtD=t=>{const d=new Date(t);return d.getDate()+'. '+MON[d.getMonth()]};
+const wdn=t=>DAY[(new Date(t).getDay()+6)%7];
+const nowS=()=>{const d=new Date();return d.getDate()+'. '+(d.getMonth()+1)+'. '+p2(d.getHours())+':'+p2(d.getMinutes())};
+let selDay=sod(Date.now());
+function toast(h){const t=$('#toast');t.innerHTML=h;t.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>t.style.display='none',2600)}
+function sheet(h){$('#sh').innerHTML=h;$('#ov').style.display='flex'}
+function closeSh(){$('#ov').style.display='none'}
+$('#ov').onclick=e=>{if(e.target.id=='ov')closeSh()};
+function renderNav(){$('#nav').innerHTML=[['a','Docházka'],['p','Směny'],['v','Výkaz'],['s','Nastavení']].map(([k,n])=>`<button class="${tab==k?'a':''}" data-a="tab" data-k="${k}">${n}</button>`).join('')}
+
+/* ---------- Docházka ---------- */
+function elapsed(a){const n=Date.now();let b=(a.breaks||[]).reduce((x,y)=>x+y[1]-y[0],0);if(a.pause)b+=n-a.pause;return{b,w:n-a.start-b}}
+function ent(e){const j=J(e.job),bk=brk(e);return `<button class="item" data-a="edit" data-id="${e.id}"><span class="bar" style="background:${j.color}"></span><div class="grow"><div class="b">${esc(j.name)}</div><div class="mu" style="font-size:14px">${hm(e.start)} – ${hm(e.end)}${bk?' · přestávka '+dur(bk):''}</div></div><div class="r"><div class="b">${dur(work(e))}</div><div class="mu" style="font-size:14px">${kc(pay(e))}</div></div></button>`}
+function viewA(){
+ const a=S.active,j=J(a?a.job:S.job),T=sod(Date.now()),td=S.entries.filter(e=>sod(e.start)==T).sort((x,y)=>x.start-y.start);
+ const goal=S.goal*36e5;let w=td.reduce((x,e)=>x+work(e),0),b=0,earn=td.reduce((x,e)=>x+pay(e),0);const rate=a?a.rate:j.rate;
+ if(a){const el=elapsed(a);w+=el.w;b=el.b;earn+=el.w/36e5*a.rate}
+ const pr=goal?Math.min(1,w/goal):(w%288e5)/288e5,C=2*Math.PI*115;
+ let rem='';if(a&&S.remind&&elapsed(a).w>S.remind*36e5)rem=`<div class="item warn">⏰ Docházka běží už přes ${S.remind} h.</div>`;
+ const ps=!a?S.shifts.filter(s=>sod(s.start)==T&&!s.done&&s.end>Date.now()).sort((x,y)=>x.start-y.start)[0]:null;
+ const pl=ps?`<button class="item note" data-a="tab" data-k="p">📅 Dnes směna ${esc(J(ps.job).name)} · ${hm(ps.start)}–${hm(ps.end)}</button>`:'';
+ const sec=a?Math.floor(elapsed(a).w/1000):0;
+ return `<select class="pill" id="jsel" ${a?'disabled':''}>${S.jobs.map(x=>`<option value="${x.id}" ${x.id==j.id?'selected':''}>● ${esc(x.name)}</option>`).join('')}</select>
+ <div class="hero ${a?'on':''}"><div class="mu" style="font-weight:600">${a?(a.pause?'Přestávka běží':'Docházka od '+hm(a.start)):'Docházka neběží'}</div>
+ <div class="ring"><svg viewBox="0 0 240 240"><circle class="rt" cx="120" cy="120" r="115"/>${pr>0?`<circle class="rp" cx="120" cy="120" r="115" stroke-dasharray="${C*pr} ${C}" transform="rotate(-90 120 120)"/>`:''}</svg>
+ <div class="c"><div class="mu" style="font-weight:600">Dnes vyděláno</div><div class="big">${kc(earn)}</div>${a?`<div class="tm">${Math.floor(sec/3600)}:${p2(Math.floor(sec/60)%60)}:${p2(sec%60)}</div>`:''}</div></div>
+ <div class="stats"><div>${dur(a?b:w)}<small>${a?'Přestávka':'Dnes'}</small></div><div>${rate} Kč/h<small>Sazba</small></div></div></div>${rem}${pl}
+ ${a?`<div class="row2"><button class="btn o" data-a="pause">${a.pause?'Ukončit pauzu':'Začít pauzu'}</button><button class="btn danger" data-a="out">■ Odchod</button></div>`:`<button class="btn" data-a="in">▶ Příchod</button>`}
+ <div class="lab">Dnes</div>${td.length?td.map(ent).join(''):'<div class="item mu">🕑 Dnes zatím nic nezapsáno.</div>'}`}
+
+/* ---------- Směny ---------- */
+function shE(s){const w=Math.max(0,s.end-s.start-(s.brk||0)*6e4);return{w,p:w/36e5*J(s.job).rate}}
+function shI(s){const j=J(s.job),x=shE(s),late=!s.done&&s.start<=Date.now();
+ return `<button class="item" data-a="sedit" data-id="${s.id}" style="${s.done?'opacity:.55':''}"><span class="bar" style="background:${j.color}"></span><div class="grow"><div class="b">${esc(j.name)}${s.done?' ✓':''}${late?'<span class="tag">k zapsání</span>':''}</div><div class="mu" style="font-size:14px">${hm(s.start)} – ${hm(s.end)}${s.brk?' · přestávka '+s.brk+' min':''}${s.note?' · '+esc(s.note):''}</div></div><div class="r"><div class="b">${dur(x.w)}</div><div class="mu" style="font-size:14px">${kc(x.p)}</div></div></button>`}
+function monthBase(){const d=new Date();d.setDate(1);d.setHours(0,0,0,0);d.setMonth(d.getMonth()+monOff);return d}
+function viewP(){
+ const b=monthBase(),y=b.getFullYear(),m=b.getMonth(),dim=new Date(y,m+1,0).getDate(),lead=S.wk==1?(b.getDay()+6)%7:b.getDay();
+ const ms=b.getTime(),me=new Date(y,m+1,1).getTime(),T=sod(Date.now());
+ const L=S.shifts.filter(s=>s.start>=ms&&s.start<me).sort((p,q)=>p.start-q.start),by={};
+ L.forEach(s=>{const k=sod(s.start);(by[k]=by[k]||[]).push(s)});
+ const tot=L.reduce((a,s)=>a+shE(s).w,0),money=L.reduce((a,s)=>a+shE(s).p,0),names=S.wk==1?DAY:[DAY[6],...DAY.slice(0,6)];
+ let cells='';for(let i=0;i<lead;i++)cells+='<div class="cd o"></div>';
+ for(let d=1;d<=dim;d++){const ts=new Date(y,m,d).getTime(),sh=by[ts]||[];
+  cells+=`<button class="cd${ts==T?' today':''}${ts==selDay?' sel':''}" data-a="sday" data-d="${ts}"><span>${d}</span><em>${sh.slice(0,3).map(s=>`<b style="background:${J(s.job).color};${s.done?'opacity:.45':''}"></b>`).join('')}${sh.length>3?'<u>+</u>':''}</em></button>`}
+ const keys=Object.keys(by);
+ return `<div class="mh"><h1>${MONF[m]} ${y}</h1><div class="nv"><button data-a="mon" data-d="-1">‹</button><button data-a="mtoday">Dnes</button><button data-a="mon" data-d="1">›</button></div></div>
+ <div class="sum"><div class="t"><div>${L.length}<small>Směn</small></div><div>${dur(tot)}<small>Plánováno</small></div><div>${kc(money)}<small>Očekáváno</small></div></div></div>
+ <div class="cal"><div class="cwd">${names.map(n=>`<div>${n}</div>`).join('')}</div><div class="cg">${cells}</div></div>
+ <button class="btn o sm" style="margin-top:12px" data-a="snew">+ Přidat směnu · ${wdn(selDay)}, ${new Date(selDay).getDate()}. ${MON[new Date(selDay).getMonth()]}</button>
+ <div class="lab">Směny v měsíci</div>
+ ${keys.length?keys.map(k=>{const d=+k,g=by[k];return `<div class="dh ${d==T?'t':''}" id="g${d}"><span>${d==T?'Dnes · ':''}${wdn(d)}, ${new Date(d).getDate()}. ${MON[new Date(d).getMonth()]}</span><span>${dur(g.reduce((a,s)=>a+shE(s).w,0))}</span></div>${g.map(shI).join('')}`}).join(''):'<p class="mu" style="text-align:center;margin:26px 0">V tomto měsíci nejsou žádné směny.</p>'}`}
+function sform(s,isNew){window._s=s;window._sn=isNew;
+ sheet(`<div class="sh-h"><h2>${isNew?'Nová směna':'Upravit směnu'}</h2><button data-a="close">Zrušit</button></div>
+ <div class="fl">Práce</div><div class="chips">${S.jobs.map(x=>`<button class="chip ${x.id==s.job?'s':''}" data-a="sj" data-id="${x.id}">${esc(x.name)}</button>`).join('')}</div>
+ <div class="f">Datum<input type="date" id="sd" value="${dstr(s.start)}"></div><div class="f">Začátek<input type="time" id="ss" value="${tstr(s.start)}"></div><div class="f">Konec<input type="time" id="se" value="${tstr(s.end)}"></div>
+ <div class="f">Přestávka (min)<input type="number" class="num" id="sb" min="0" value="${s.brk||0}"></div>
+ ${isNew?`<div class="f">Opakovat dalších týdnů<input type="number" class="num" id="sr" min="0" max="52" value="${window._sr||0}"></div>`:''}
+ <div class="fl">Poznámka</div><textarea id="sn" rows="2" placeholder="Např. otevírání, zástup…">${esc(s.note||'')}</textarea>
+ <div class="mu" style="text-align:center;margin:16px;font-weight:600" id="ssum"></div>
+ ${isNew?'':`${s.start<=Date.now()&&!s.done?'<button class="btn o sm" style="margin-bottom:10px" data-a="sdone">✓ Zapsat do výkazu</button>':''}<button class="btn o sm" style="margin-bottom:14px" data-a="sdel">🗑 Smazat</button>`}
+ <button class="btn" data-a="ssave">Uložit</button>`);
+ document.querySelectorAll('#sh input,#sh textarea').forEach(i=>i.oninput=scol);scol()}
+function scol(){const s=window._s,d=$('#sd').value,T=t=>new Date(d+'T'+t).getTime();
+ s.start=T($('#ss').value);s.end=T($('#se').value);if(s.end<=s.start)s.end+=864e5;s.brk=+$('#sb').value||0;s.note=$('#sn').value;
+ if($('#sr'))window._sr=Math.max(0,Math.min(52,+$('#sr').value||0));
+ const x=shE(s);$('#ssum').textContent='Plánováno '+dur(x.w)+' · '+kc(x.p);return x}
+
+/* ---------- Výkaz ---------- */
+function viewV(){
+ const s=wstart(wkOff),e=s+7*864e5,L=S.entries.filter(x=>x.start>=s&&x.start<e&&(!filt||x.job==filt)).sort((a,b)=>a.start-b.start);
+ const days=[0,1,2,3,4,5,6].map(i=>{const d=s+i*864e5,en=L.filter(x=>sod(x.start)==d);return{d,en,w:en.reduce((a,x)=>a+work(x),0)}}),mx=Math.max(...days.map(x=>x.w),1);
+ const nm=i=>DAY[(i+(S.wk==1?0:6))%7],last=s+6*864e5,T=sod(Date.now());
+ return `<div class="top"><button data-a="wk" data-d="-1">‹</button><h2>${fmtD(s)} – ${fmtD(last)}</h2><button data-a="wk" data-d="1">›</button><button data-a="filt" style="font-size:21px">☰</button></div>
+ <div class="sum"><div class="t"><div>${dur(L.reduce((a,x)=>a+work(x),0))}<small>Celkem</small></div><div>${dur(L.reduce((a,x)=>a+brk(x),0))}<small>Přestávka</small></div><div>${kc(L.reduce((a,x)=>a+pay(x),0))}<small>Výdělek</small></div></div>
+ <div class="wbars">${days.map((x,i)=>`<div class="${x.d==T?'today':''}"><i><b style="height:${x.w/mx*100}%"></b></i>${nm(i)}</div>`).join('')}</div></div>
+ ${days.filter(x=>x.en.length).map(x=>`<div class="dh ${x.d==T?'t':''}"><span>${wdn(x.d)}, ${new Date(x.d).getDate()}. ${MON[new Date(x.d).getMonth()]}</span><span>${dur(x.w)} · ${kc(x.en.reduce((a,q)=>a+pay(q),0))}</span></div>${x.en.map(ent).join('')}`).join('')||'<p class="mu" style="text-align:center;margin-top:30px">Žádné záznamy.</p>'}
+ <button class="fab" data-a="new">+</button>`}
+function form(e,isNew){
+ window._e=e;window._new=isNew;const bk=e.breaks||[];
+ sheet(`<div class="sh-h"><h2>${isNew?'Nový záznam':'Upravit záznam'}</h2><button data-a="close">Zrušit</button></div>
+ <div class="fl">Práce</div><div class="chips">${S.jobs.map(x=>`<button class="chip ${x.id==e.job?'s':''}" data-a="fj" data-id="${x.id}">${esc(x.name)}</button>`).join('')}</div>
+ <div class="fl">Hodinová sazba</div><input type="number" id="fr" value="${e.rate}">
+ <div class="f">Datum<input type="date" id="fd" value="${dstr(e.start)}"></div><div class="f">Začátek<input type="time" id="fs" value="${tstr(e.start)}"></div><div class="f">Konec<input type="time" id="fe" value="${tstr(e.end)}"></div>
+ <div class="fl">Přestávky</div>${bk.map((b,i)=>`<div class="f">Přestávka ${i+1}<span><input type="time" class="bs" value="${tstr(b[0])}"> <input type="time" class="be" value="${tstr(b[1])}"> <button data-a="bdel" data-i="${i}" style="color:var(--muted);font-size:18px;padding:6px">✕</button></span></div>`).join('')}
+ <button class="btn o sm" data-a="badd">+ Přidat přestávku</button>
+ <div class="fl">Poznámka</div><textarea id="fn" rows="3" placeholder="Na čem jste pracovali?">${esc(e.note||'')}</textarea>
+ <div class="mu" style="text-align:center;margin:16px;font-weight:600" id="fsum"></div><div class="err" id="ferr"></div>
+ ${isNew?'':`<button class="btn o sm" style="margin-bottom:10px" data-a="dup">⧉ Duplikovat na dnešek</button><button class="btn o sm" style="margin-bottom:14px" data-a="del">🗑 Smazat</button>`}
+ <button class="btn" data-a="fsave">Uložit</button>`);
+ document.querySelectorAll('#sh input,#sh textarea').forEach(i=>i.oninput=()=>collect())}
+function collect(){
+ const e=window._e,d=$('#fd').value,T=t=>new Date(d+'T'+t).getTime();
+ e.rate=+$('#fr').value||0;e.note=$('#fn').value;e.start=T($('#fs').value);e.end=T($('#fe').value);if(e.end<=e.start)e.end+=864e5;
+ const bs=[...document.querySelectorAll('.bs')],be=[...document.querySelectorAll('.be')];
+ e.breaks=bs.map((x,i)=>{let a=T(x.value),b=T(be[i].value);if(a<e.start)a+=864e5;if(b<=a)b+=864e5;return[a,b]});
+ const er=e.end>Date.now()||e.start>Date.now()?'Záznam nemůže začínat ani končit v budoucnosti.':'';
+ $('#fsum').textContent='Odpracováno '+dur(work(e))+' · '+kc(pay(e));$('#ferr').textContent=er;return er}
+
+/* ---------- Nastavení ---------- */
+function viewS(){
+ const r=(ic,t,v,a)=>`<button data-a="${a}"><span class="ic">${ic}</span><span class="grow">${t}</span><span class="mu">${v||''}</span></button>`;
+ return `<h1 style="font-size:34px;margin:6px 0 8px">Nastavení</h1>
+ <div class="lab">Výkazy práce</div><div class="set">${r('📄','Exportovat výkaz práce','›','exp')}${r('⇩','Importovat (JSON, CSV, MD)','›','imp')}</div>
+ <div class="lab">Práce</div><div class="set">${r('💼','Spravovat práce',S.jobs.length+' ›','jobs')}</div>
+ <div class="lab">Docházka</div><div class="set">${r('📅','Týden začíná',S.wk==1?'Pondělí ›':'Neděle ›','wkd')}${r('🔔','Připomínka odchodu',(S.remind?'Po '+S.remind+' h':'Vypnuto')+' ›','rem')}${r('⚑','Denní cíl',(S.goal?S.goal+' h':'Vypnuto')+' ›','goal')}</div>
+ <div class="lab">Synchronizace</div><div class="set">${r('☁','GitHub',(GH.auto&&ghOK()?'Zapnuto':ghOK()?'Ručně':'Vypnuto')+' ›','gh')}</div>
+ <div class="lab">Vaše data</div><div class="set">${r('⇧','Zálohovat do souboru','','bak')}${r('⇩','Obnovit ze souboru','','imp')}</div>
+ <p class="mu" style="text-align:center;margin-top:28px;font-size:13px">Verze 1.1.0</p>`}
+function render(){renderNav();$('#view').innerHTML=tab=='a'?viewA():tab=='p'?viewP():tab=='v'?viewV():viewS();const s=$('#jsel');if(s)s.onchange=()=>{S.job=+s.value;save()}}
+setInterval(()=>{if(tab=='a'&&S.active&&$('#ov').style.display!='flex')render()},1000);
+function opts(title,list,cb){window._cb=cb;sheet(`<div class="sh-h"><h2>${title}</h2><button data-a="close">Zrušit</button></div>`+list.map(([l,v])=>`<button class="item b" data-a="opt" data-v="${v}">${l}</button>`).join(''))}
+function download(name,txt,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;a.click()}
+
+/* ---------- Import ---------- */
+function parseRows(txt){
+ const out=[];txt.split(/\r?\n/).forEach(l=>{let t=l.trim();if(t[0]=='|')t=t.slice(1);if(t.slice(-1)=='|')t=t.slice(0,-1);
+  const c=t.split(/[;\t|]/.test(t)?/[;\t|]/:/,/).map(x=>x.trim());if(c.length<3)return;
+  let m=c[0].match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/),dd;if(m)dd=[+m[1],+m[2],+m[3]];else{m=c[0].match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/);if(!m)return;dd=[+m[3],+m[2],+m[1]]}
+  const tm=x=>{const q=(x||'').match(/^(\d{1,2}):(\d{2})/);return q?[+q[1],+q[2]]:null},a=tm(c[1]),b=tm(c[2]);if(!a||!b)return;
+  const s=new Date(dd[0],dd[1]-1,dd[2],a[0],a[1]).getTime();let en=new Date(dd[0],dd[1]-1,dd[2],b[0],b[1]).getTime();if(en<=s)en+=864e5;
+  const bm=+(c[3]||0)||0,jb=S.jobs.find(x=>x.name.toLowerCase()==(c[4]||'').toLowerCase())||S.jobs[0];
+  out.push({id:++uid,job:jb.id,rate:jb.rate,start:s,end:en,breaks:bm?[[s+36e5,s+36e5+bm*6e4]]:[],note:c[5]||''})});return out}
+function importFile(f){
+ const r=new FileReader();r.onload=()=>{try{const t=r.result;let n=0;
+  if(/\.json$/i.test(f.name)){const o=JSON.parse(t);if(o.jobs&&o.entries){S=Object.assign(S,o);migrate();n=o.entries.length}else if(Array.isArray(o)){o.forEach(x=>{S.entries.push(Object.assign({id:++uid,job:S.jobs[0].id,rate:S.jobs[0].rate,breaks:[]},x));n++})}}
+  else{const rows=parseRows(t);S.entries.push(...rows);n=rows.length}
+  save();render();toast(`<b>Importováno záznamů: ${n}</b>`+(n?'':'<div class="mu" style="font-size:13px;margin-top:4px">Očekávané sloupce: datum, začátek, konec, přestávka (min), práce, poznámka</div>'))}catch(e){toast('<b>Soubor se nepodařilo načíst</b>')}};r.readAsText(f)}
+const fi=document.createElement('input');fi.type='file';fi.accept='.json,.csv,.md,.txt,.tsv';fi.onchange=()=>{if(fi.files[0])importFile(fi.files[0]);fi.value=''};
+
+/* ---------- GitHub synchronizace ---------- */
+function setMsg(t){ghMsg=t;const e=$('#ghs');if(e)e.textContent=t}
+function b64e(s){const b=new TextEncoder().encode(s);let r='';b.forEach(c=>r+=String.fromCharCode(c));return btoa(r)}
+function b64d(s){const r=atob(s.replace(/\s/g,''));return new TextDecoder().decode(Uint8Array.from(r,c=>c.charCodeAt(0)))}
+const ghBase=()=>`https://api.github.com/repos/${encodeURIComponent(GH.owner)}/${encodeURIComponent(GH.repo)}`;
+const ghHead=body=>Object.assign({Authorization:'Bearer '+GH.token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},body?{'Content-Type':'application/json'}:{});
+const ghUrl=()=>ghBase()+'/contents/'+GH.path.split('/').map(encodeURIComponent).join('/');
+async function ghErr(r){
+ if(r.status==401)return 'Neplatný nebo vypršelý token';
+ if(r.status==403)return 'Token nemá oprávnění (Contents: Read and write) nebo je překročen limit';
+ if(r.status==404)return 'Repozitář nenalezen nebo token k němu nemá přístup';
+ let m='';try{m=(await r.json()).message}catch(e){}return 'GitHub '+r.status+(m?': '+m:'')}
+async function ghGet(){
+ const r=await fetch(ghUrl()+'?ref='+encodeURIComponent(GH.branch)+'&t='+Date.now(),{headers:ghHead(),cache:'no-store'});
+ if(r.status==404){const q=await fetch(ghBase(),{headers:ghHead(),cache:'no-store'});if(!q.ok)throw new Error(await ghErr(q));return{missing:true}}
+ if(!r.ok)throw new Error(await ghErr(r));
+ const j=await r.json();return{sha:j.sha,text:b64d(j.content||'')}}
+async function ghPut(sha){
+ const body={message:'Docházka: aktualizace dat '+new Date().toISOString(),content:b64e(JSON.stringify(S,null,1)),branch:GH.branch};if(sha)body.sha=sha;
+ let r=await fetch(ghUrl(),{method:'PUT',headers:ghHead(1),body:JSON.stringify(body)});
+ if(r.status==409||r.status==422){const g=await ghGet();if(g.sha)body.sha=g.sha;else delete body.sha;r=await fetch(ghUrl(),{method:'PUT',headers:ghHead(1),body:JSON.stringify(body)})}
+ if(!r.ok)throw new Error(await ghErr(r))}
+function applyRemote(o){S=Object.assign({},S,o);migrate();persist()}
+async function syncNow(){
+ if(!ghOK())return;if(syncing){again=true;return}
+ syncing=true;setMsg('Synchronizuji…');
+ try{
+  const g=await ghGet();
+  if(g.missing){if(!S.updated)S.updated=Date.now();persist();await ghPut(null);setMsg('Nahráno ✓ '+nowS())}
+  else{let o;try{o=JSON.parse(g.text)}catch(e){throw new Error('Soubor na GitHubu není platný JSON')}
+   const ru=o.updated||0;
+   if(ru>(S.updated||0)){applyRemote(o);render();setMsg('Staženo z GitHubu ✓ '+nowS())}
+   else if(ru<(S.updated||0)){await ghPut(g.sha);setMsg('Nahráno ✓ '+nowS())}
+   else setMsg('Aktuální ✓ '+nowS())}
+ }catch(e){setMsg('⚠ '+(e&&e.message&&e.message!='Failed to fetch'?e.message:'Není připojení k síti'))}
+ syncing=false;if(again){again=false;syncNow()}}
+function schedPush(){if(!(GH.auto&&ghOK()))return;clearTimeout(pt);pt=setTimeout(syncNow,2500)}
+function ghRead(){GH.owner=$('#gho').value.trim();GH.repo=$('#ghr').value.trim();GH.branch=$('#ghb').value.trim()||'main';GH.path=$('#ghp').value.trim().replace(/^\/+/,'')||'data.json';GH.token=$('#ght').value.trim();GH.auto=$('#gha').checked;ghStore()}
+async function ghFirst(){
+ if(!ghOK()){setMsg('Vyplňte uživatele, repozitář a token');return}
+ syncing=true;setMsg('Připojuji…');
+ try{const g=await ghGet();
+  if(g.missing){if(!S.updated)S.updated=Date.now();persist();await ghPut(null);setMsg('Připojeno, data nahrána ✓ '+nowS())}
+  else{let o;try{o=JSON.parse(g.text)}catch(e){throw new Error('Soubor na GitHubu není platný JSON')}
+   const lh=S.entries.length+S.shifts.length>0,rh=(o.entries||[]).length+(o.shifts||[]).length>0;
+   if(!lh||!rh||confirm('Na GitHubu už jsou uložená data.\n\nOK = použít data z GitHubu (přepíše data v zařízení)\nZrušit = přepsat GitHub daty z tohoto zařízení')){
+    if(rh||!lh){applyRemote(o);render();setMsg('Připojeno, data stažena ✓ '+nowS())}else{S.updated=Date.now();persist();await ghPut(g.sha);setMsg('Připojeno, data nahrána ✓ '+nowS())}}
+   else{S.updated=Date.now();persist();await ghPut(g.sha);setMsg('Připojeno, data nahrána ✓ '+nowS())}}
+ }catch(e){setMsg('⚠ '+(e&&e.message&&e.message!='Failed to fetch'?e.message:'Není připojení k síti'))}
+ syncing=false}
+
+/* ---------- Akce ---------- */
+const A={
+ tab:d=>{tab=d.k;render()},close:closeSh,
+ in(){const j=J(S.job);S.active={job:j.id,rate:j.rate,start:Date.now(),breaks:[]};save();render()},
+ pause(){const a=S.active;if(a.pause){a.breaks.push([a.pause,Date.now()]);a.pause=null}else a.pause=Date.now();save();render()},
+ out(){const a=S.active;if(a.pause)a.breaks.push([a.pause,Date.now()]);const e={id:++uid,job:a.job,rate:a.rate,start:a.start,end:Date.now(),breaks:a.breaks,note:''};S.entries.push(e);S.active=null;
+  const T=sod(e.start),sh=S.shifts.find(s=>!s.done&&s.job==e.job&&sod(s.start)==T);if(sh)sh.done=true;
+  save();render();toast(`<div class="mu b" style="letter-spacing:.1em;font-size:12px">SMĚNA DOKONČENA</div><span style="font-size:38px;font-weight:800">${dur(work(e))}</span> <b style="color:var(--primary);font-size:21px">+${kc(pay(e))}</b>`)},
+ wk:d=>{wkOff+=+d.d;render()},
+ filt(){sheet(`<div class="sh-h"><h2>Filtrovat podle práce</h2><button data-a="close">Hotovo</button></div><div class="chips"><button class="chip ${!filt?'s':''}" data-a="setf" data-id="0">Všechny práce</button>${S.jobs.map(x=>`<button class="chip ${filt==x.id?'s':''}" data-a="setf" data-id="${x.id}">● ${esc(x.name)}</button>`).join('')}</div>`)},
+ setf:d=>{filt=+d.id;A.filt();render()},
+ new(){const j=J(filt||S.job),d=new Date();d.setHours(9,0,0,0);if(d.getTime()>Date.now())d.setDate(d.getDate()-1);form({id:++uid,job:j.id,rate:j.rate,start:d.getTime(),end:d.getTime()+8*36e5,breaks:[],note:''},true)},
+ edit:d=>form(JSON.parse(JSON.stringify(S.entries.find(e=>e.id==d.id))),false),
+ fj:d=>{collect();const j=J(d.id);window._e.job=j.id;window._e.rate=j.rate;form(window._e,window._new)},
+ badd(){collect();const e=window._e;e.breaks.push([e.start+36e5,e.start+36e5+18e5]);form(e,window._new)},
+ bdel:d=>{collect();window._e.breaks.splice(+d.i,1);form(window._e,window._new)},
+ fsave(){if(collect())return;const e=window._e,i=S.entries.findIndex(x=>x.id==e.id);i<0?S.entries.push(e):S.entries[i]=e;save();closeSh();render()},
+ del(){S.entries=S.entries.filter(x=>x.id!=window._e.id);save();closeSh();render()},
+ dup(){const e=window._e,o=sod(Date.now())-sod(e.start),c=Object.assign({},e,{id:++uid,start:e.start+o,end:e.end+o,breaks:e.breaks.map(b=>[b[0]+o,b[1]+o])});if(c.end>Date.now()){c.end=Date.now();if(c.start>=c.end){toast('<b>Záznam by skončil v budoucnosti</b>');return}}S.entries.push(c);save();closeSh();render()},
+ opt:d=>{const f=window._cb;closeSh();f(d.v)},
+ wkd(){opts('Týden začíná',[['Pondělí',1],['Neděle',0]],v=>{S.wk=+v;save();render()})},
+ rem(){opts('Připomínka odchodu',[['Po 8 h',8],['Po 9 h',9],['Po 10 h',10],['Po 12 h',12],['Vypnuto',0]],v=>{S.remind=+v;save();render()})},
+ goal(){opts('Denní cíl',[['4 h',4],['6 h',6],['8 h',8],['10 h',10],['Vypnuto',0]],v=>{S.goal=+v;save();render()})},
+ imp(){fi.click()},
+ bak(){download('dochazka-zaloha.json',JSON.stringify(S),'application/json')},
+ /* směny */
+ mon:d=>{monOff+=+d.d;const b=monthBase();selDay=monOff==0?sod(Date.now()):b.getTime();render()},
+ mtoday(){monOff=0;selDay=sod(Date.now());render()},
+ sday:d=>{selDay=+d.d;render();const g=document.getElementById('g'+selDay);if(g)g.scrollIntoView({behavior:'smooth',block:'nearest'})},
+ snew(){window._sr=0;const d=new Date(selDay);d.setHours(9,0,0,0);sform({id:++uid,job:J(S.job).id,start:d.getTime(),end:d.getTime()+8*36e5,brk:30,note:''},true)},
+ sedit:d=>sform(JSON.parse(JSON.stringify(S.shifts.find(x=>x.id==d.id))),false),
+ sj:d=>{scol();window._s.job=+d.id;sform(window._s,window._sn)},
+ ssave(){scol();const s=window._s;if(isNaN(s.start)||isNaN(s.end))return;const i=S.shifts.findIndex(q=>q.id==s.id);
+  if(i<0){S.shifts.push(s);for(let k=1;k<=(window._sr||0);k++)S.shifts.push(Object.assign({},s,{id:++uid,start:s.start+k*7*864e5,end:s.end+k*7*864e5}))}else S.shifts[i]=s;
+  selDay=sod(s.start);monOff=(new Date(s.start).getFullYear()-new Date().getFullYear())*12+new Date(s.start).getMonth()-new Date().getMonth();
+  save();closeSh();render()},
+ sdel(){S.shifts=S.shifts.filter(x=>x.id!=window._s.id);save();closeSh();render()},
+ sdone(){scol();const s=window._s,e={id:++uid,job:s.job,rate:J(s.job).rate,start:s.start,end:Math.min(s.end,Date.now()),breaks:[],note:s.note||''};
+  if(s.brk){const m=s.start+(e.end-s.start)/2,h=Math.min(s.brk*6e4,e.end-e.start)/2;e.breaks=[[m-h,m+h]]}
+  S.entries.push(e);const i=S.shifts.findIndex(q=>q.id==s.id);s.done=true;S.shifts[i]=s;save();closeSh();render();toast('<b>Směna zapsána do výkazu</b>')},
+ /* práce */
+ jobs(){sheet(`<div class="sh-h"><h2>Práce</h2><button data-a="close">Hotovo</button></div>${S.jobs.map(j=>`<button class="item" data-a="jedit" data-id="${j.id}"><span class="bar" style="background:${j.color}"></span><span class="grow b">${esc(j.name)}</span><span class="mu">${j.rate} Kč/h ${j.remind?'🔔':''} ›</span></button>`).join('')}<button class="btn o sm" style="margin-top:6px" data-a="jnew">+ Přidat práci</button>`)},
+ jnew(){const j={id:++uid,name:'',rate:200,color:COL[S.jobs.length%6]};S.jobs.push(j);A.jedit({id:j.id})},
+ jedit:d=>{const j=J(d.id);window._j=j;sheet(`<div class="sh-h"><h2>Upravit práci</h2><button data-a="jobs">Zrušit</button></div><div class="fl">Název</div><input type="text" id="jn" value="${esc(j.name)}"><div class="fl">Hodinová sazba</div><input type="number" id="jr" value="${j.rate}"><div class="fl">Barva</div><div class="chips">${COL.map(c=>`<button class="sw" data-a="jc" data-c="${c}" style="background:${c};outline:${c==j.color?'3px solid '+c:'0'};outline-offset:3px"></button>`).join('')}</div>
+ <div class="f">Připomínka příchodu<input type="checkbox" id="jm" ${j.remind?'checked':''}></div><div class="f">Připomenout v<input type="time" id="jt" value="${j.at||'15:00'}"></div>
+ <button class="btn" data-a="jsave">Uložit</button>${S.jobs.length>1?'<button class="btn o sm" style="margin-top:10px" data-a="jdel">Smazat práci</button>':''}`)},
+ jc:d=>{const j=window._j;j.name=$('#jn').value;j.rate=+$('#jr').value;j.remind=$('#jm').checked;j.at=$('#jt').value;j.color=d.c;A.jedit({id:j.id})},
+ jsave(){const j=window._j;j.name=$('#jn').value||'Práce';j.rate=+$('#jr').value||0;j.remind=$('#jm').checked;j.at=$('#jt').value;save();A.jobs();render()},
+ jdel(){S.jobs=S.jobs.filter(x=>x.id!=window._j.id);S.entries=S.entries.filter(x=>S.jobs.some(j=>j.id==x.job));S.shifts=S.shifts.filter(x=>S.jobs.some(j=>j.id==x.job));if(!S.jobs.some(j=>j.id==S.job))S.job=S.jobs[0].id;save();A.jobs();render()},
+ /* export */
+ exp(){const f=new Date(),a=new Date(f.getFullYear(),f.getMonth(),1),b=new Date(f.getFullYear(),f.getMonth()+1,0);window._x={a:dstr(a),b:dstr(b),j:S.jobs.map(x=>x.id),f:'csv'};A.xr()},
+ xr(){const x=window._x;sheet(`<div class="sh-h"><h2>Export výkazu práce</h2><button data-a="close">Zrušit</button></div><div class="f">Od<input type="date" id="xa" value="${x.a}"></div><div class="f">Do<input type="date" id="xb" value="${x.b}"></div><div class="fl">Práce</div><div class="chips">${S.jobs.map(j=>`<button class="chip ${x.j.includes(j.id)?'s':''}" data-a="xj" data-id="${j.id}">${esc(j.name)}</button>`).join('')}</div><div class="fl">Formát</div><div class="chips">${['csv','pdf'].map(f=>`<button class="chip ${x.f==f?'s':''}" data-a="xf" data-f="${f}">${f.toUpperCase()}</button>`).join('')}</div><div class="mu" style="text-align:center;margin:16px;font-weight:600" id="xs"></div><button class="btn" data-a="xgo">Export</button>`);A.xl()},
+ xl(){const x=window._x;x.a=$('#xa').value;x.b=$('#xb').value;const L=S.entries.filter(e=>x.j.includes(e.job)&&dstr(e.start)>=x.a&&dstr(e.start)<=x.b).sort((p,q)=>p.start-q.start);x.L=L;$('#xs').textContent=`Záznamů: ${L.length} · ${dur(L.reduce((s,e)=>s+work(e),0))} · ${kc(L.reduce((s,e)=>s+pay(e),0))}`;['xa','xb'].forEach(i=>$('#'+i).onchange=A.xl)},
+ xj:d=>{A.xl();const x=window._x,i=+d.id;x.j=x.j.includes(i)?x.j.filter(v=>v!=i):[...x.j,i];A.xr()},
+ xf:d=>{A.xl();window._x.f=d.f;A.xr()},
+ xgo(){A.xl();const x=window._x,L=x.L,rows=L.map(e=>[dstr(e.start),tstr(e.start),tstr(e.end),Math.round(brk(e)/6e4),J(e.job).name,(e.note||'').replace(/[;\n\r]/g,' '),(work(e)/36e5).toFixed(2),pay(e).toFixed(2)]);
+  if(x.f=='csv')download('vykaz.csv','﻿datum;začátek;konec;přestávka (min);práce;poznámka;hodiny;Kč\n'+rows.map(r=>r.join(';')).join('\n'),'text/csv');
+  else{const w=window.open('','_blank');if(!w){toast('<b>Prohlížeč zablokoval okno pro PDF</b>');return}w.document.write(`<title>Výkaz práce</title><body style="font-family:sans-serif"><h2>Výkaz práce ${x.a} – ${x.b}</h2><table border=1 cellpadding=6 style="border-collapse:collapse">${rows.map(r=>'<tr>'+r.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>').join('')}</table><p><b>${esc($('#xs').textContent)}</b></p>`);w.document.close();w.print()}},
+ /* github */
+ gh(){sheet(`<div class="sh-h"><h2>GitHub</h2><button data-a="close">Zavřít</button></div>
+ <p class="mu" style="font-size:14px;line-height:1.55;margin:0 0 4px">Data se ukládají jako soubor JSON do vašeho <b>soukromého</b> repozitáře. Token zůstává jen v tomto zařízení a není součástí zálohy.</p>
+ <div class="fl">Uživatel (vlastník repozitáře)</div><input type="text" id="gho" value="${esc(GH.owner)}" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false">
+ <div class="fl">Název repozitáře</div><input type="text" id="ghr" value="${esc(GH.repo)}" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false">
+ <div class="fl">Větev</div><input type="text" id="ghb" value="${esc(GH.branch)}" autocapitalize="off" autocomplete="off" spellcheck="false">
+ <div class="fl">Soubor s daty</div><input type="text" id="ghp" value="${esc(GH.path)}" autocapitalize="off" autocomplete="off" spellcheck="false">
+ <div class="fl">Přístupový token</div><input type="password" id="ght" value="${esc(GH.token)}" autocapitalize="off" autocomplete="off" placeholder="github_pat_…">
+ <div class="f">Automatická synchronizace<input type="checkbox" id="gha" ${GH.auto?'checked':''}></div>
+ <div class="mu" style="text-align:center;margin:10px 0 14px;font-weight:600;font-size:14px;min-height:20px" id="ghs">${esc(ghMsg)}</div>
+ <button class="btn" data-a="ghsave">Uložit a připojit</button>
+ <div class="row2" style="margin-top:10px"><button class="btn o sm" data-a="ghnow">⟳ Synchronizovat</button></div>
+ <div class="row2" style="margin-top:10px"><button class="btn o sm" data-a="ghup">⇧ Nahrát</button><button class="btn o sm" data-a="ghdn">⇩ Stáhnout</button></div>
+ <button class="btn o sm" style="margin-top:10px;color:var(--attn)" data-a="ghoff">Odpojit a smazat token</button>`)},
+ async ghsave(){ghRead();await ghFirst();render()},
+ async ghnow(){ghRead();if(!ghOK()){setMsg('Vyplňte uživatele, repozitář a token');return}await syncNow()},
+ async ghup(){ghRead();if(!ghOK()){setMsg('Vyplňte uživatele, repozitář a token');return}if(!confirm('Přepsat soubor na GitHubu daty z tohoto zařízení?'))return;
+  syncing=true;setMsg('Nahrávám…');try{const g=await ghGet();S.updated=Date.now();persist();await ghPut(g.sha||null);setMsg('Nahráno ✓ '+nowS())}catch(e){setMsg('⚠ '+(e.message=='Failed to fetch'?'Není připojení k síti':e.message))}syncing=false},
+ async ghdn(){ghRead();if(!ghOK()){setMsg('Vyplňte uživatele, repozitář a token');return}if(!confirm('Přepsat data v tomto zařízení daty z GitHubu?'))return;
+  syncing=true;setMsg('Stahuji…');try{const g=await ghGet();if(g.missing)throw new Error('Soubor na GitHubu zatím neexistuje');applyRemote(JSON.parse(g.text));render();setMsg('Staženo ✓ '+nowS())}catch(e){setMsg('⚠ '+(e.message=='Failed to fetch'?'Není připojení k síti':e.message))}syncing=false},
+ ghoff(){GH={owner:'',repo:'',branch:'main',path:'data.json',token:'',auto:false};ghStore();ghMsg='';closeSh();render();toast('<b>GitHub odpojen, token smazán</b>')}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset)});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&GH.auto&&ghOK())syncNow()});
+render();
+if(GH.auto&&ghOK())syncNow();
+</script></body></html>
